@@ -26,6 +26,22 @@ namespace Gomoku
             }
             return result;
         }
+        public bool GetYesOrNo(string message)
+        {
+            while (true)
+            {
+                Display(message);
+                string sender = Console.ReadLine();
+                if (sender.ToUpper() == "Y")
+                {
+                    return true;
+                }
+                else if (sender.ToUpper() == "N")
+                {
+                    return false;
+                }
+            }
+        }
         public int GetValidPlayerType(int highbound)
         {
             bool isGettingInt = true;
@@ -112,7 +128,10 @@ namespace Gomoku
                 {
                     Error("Please input a proper integer\n\n");
                 }
-                else
+                else if (result > 15 | result < 1)
+                {
+                    Error("Stay within the bounds of the board, 1-15: ");
+                }
                 {
                     valid = true;
                 }
@@ -129,6 +148,10 @@ namespace Gomoku
                 if (!int.TryParse(Console.ReadLine(), out result))
                 {
                     Error("Please input a proper integer\n\n");
+                }
+                else if (result > 15 | result < 1)
+                {
+                    Error("Stay within the bounds of the board, 1-15: ");
                 }
                 else
                 {

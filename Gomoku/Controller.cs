@@ -50,6 +50,7 @@ namespace Gomoku
                     board[i,j] = '_';
                 }
             }
+
             UI.Warn("(Randomizing)");
             int firstTurn = _rand.Next(0, 2);
             GomokuEngine Game = new GomokuEngine(players[0], players[1]);
@@ -58,10 +59,48 @@ namespace Gomoku
             while (!Game.IsOver)
             {
                 UI.Error($"\n{Game.Current.Name}'s Turn");
-                Stone nextStone = new Stone(UI.GetRow(), UI.GetColumn(), isBlack);
+
+                Stone nextStone = GetNewStone(Game, board);
                 Game.Place(nextStone);
+
                 board[nextStone.Row, nextStone.Column] = nextStone.IsBlack ? 'X' : 'O';
                 UI.PrintBoard(board);
+            }
+            UI.Warn($"\n\nGame over, the Winner is {Game.Winner.Name}");
+            if (UI.GetYesOrNo("Play Again [y/n]: "))
+            {
+                Run();
+            }
+            else
+            {
+                Environment.Exit(0);
+            }
+            
+        }
+
+        public Stone GetNewStone(GomokuEngine Game, char[,] board)
+        {
+            if (Game.Current.GetType() == typeof(Gomoku.Players.RandomPlayer))
+            {
+                Stone nextStone = Game.Current.GenerateMove(Game.Stones);
+                return nextStone;
+
+            }
+            else
+            {
+                
+                while (true)
+                {
+                    Stone nextStone = new Stone(UI.GetRow(), UI.GetColumn(), Game.IsBlacksTurn);
+                    if (board[nextStone.Row, nextStone.Column] == 'X' | board[nextStone.Row, nextStone.Column] == 'O')
+                    {
+                        UI.Error("\n[Error]: Duplicate move.\n");
+                    }
+                    else
+                    {
+                        return nextStone;
+                    }
+                }
             }
         }
         
