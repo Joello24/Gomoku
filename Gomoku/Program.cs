@@ -4,8 +4,7 @@
     {
         static void Main(string[] args)
         {
-            ConsoleIO consoleIO = new ConsoleIO();
-            Controller controller = new Controller(consoleIO);
+            Controller controller = new Controller();
             controller.Run();
         }
     }

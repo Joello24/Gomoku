@@ -5,14 +5,14 @@ namespace Gomoku.Game
 {
     public class GomokuEngine
     {
-        public const int WIDTH = 15;
+        public const int WIDTH = 16;
         private const char BLACK_SYMBOL = 'X';
         private const char WHITE_SYMBOL = 'O';
 
         private IPlayer playerOne;
         private IPlayer playerTwo;
 
-        public char[,] board = new char[WIDTH, WIDTH];
+        private char[,] board = new char[WIDTH, WIDTH];
         private Stone[] stones = new Stone[WIDTH * WIDTH];
         private int stoneIndex = 0;
 

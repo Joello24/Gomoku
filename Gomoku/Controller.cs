@@ -10,27 +10,26 @@ namespace Gomoku
 {
     internal class Controller
     {
-        public static ConsoleIO UI;
+       
         private Random _rand = new Random();
-        public Controller(ConsoleIO ui)
+        public Controller()
         {
-            UI = ui;
         }
 
         public void Run()
         {
-            // Create Game
-            List<IPlayer> players = CreateGame();
+            // Create Players
+            List<IPlayer> players = CreatePlayers();
 
             // Play Game
             PlayGame(players);
         }
 
-        public List<IPlayer> CreateGame()
+        public List<IPlayer> CreatePlayers()
         {
             List<IPlayer> players = new List<IPlayer>();
-            UI.Display("Welcome to Gomoku");
-            UI.Display("=================");
+            ConsoleIO.Display("Welcome to Gomoku");
+            ConsoleIO.Display("=================");
             int p1 = 1;
             int p2 = 2;
             IPlayer player1 = SetPlayerType(p1);
@@ -42,6 +41,7 @@ namespace Gomoku
 
         public void PlayGame(List<IPlayer> players)
         {
+            // CREATE BOARD
             char [,] board = new char [16,16];
             for (int i = 0; i < board.GetLength(0); i++)
             {
@@ -50,24 +50,39 @@ namespace Gomoku
                     board[i,j] = '_';
                 }
             }
-
-            UI.Warn("(Randomizing)");
+            // RANDOMLY CHOOSE FIRST PLAYER
+            ConsoleIO.Warn("\n(Randomizing)\n");
             int firstTurn = _rand.Next(0, 2);
+
+            // CREATE GAME
             GomokuEngine Game = new GomokuEngine(players[0], players[1]);
-            bool isBlack = true;
-            UI.Display($"{Game.Current.Name} goes first.");
+            bool draw = false;
+            // GAME STARTS, LOOPS TILL END
+            ConsoleIO.Display($"{Game.Current.Name} goes first.");
             while (!Game.IsOver)
             {
-                UI.Error($"\n{Game.Current.Name}'s Turn");
+                ConsoleIO.Display($"\n\n{Game.Current.Name}'s Turn\n");
 
                 Stone nextStone = GetNewStone(Game, board);
-                Game.Place(nextStone);
+                Result res = Game.Place(nextStone);
+                //if (!res.IsSuccess)
+                //{
+                //    ConsoleIO.Error(res.Message);
+
+                //}
+                //if (res.IsSuccess)
+                //{
+                //    ConsoleIO.Error(res.Message);
+                //}
 
                 board[nextStone.Row, nextStone.Column] = nextStone.IsBlack ? 'X' : 'O';
-                UI.PrintBoard(board);
+                ConsoleIO.PrintBoard(board);
             }
-            UI.Warn($"\n\nGame over, the Winner is {Game.Winner.Name}");
-            if (UI.GetYesOrNo("Play Again [y/n]: "))
+
+            // GAME OVER
+            
+            ConsoleIO.Warn($"\n\nGame over, the Winner is {Game.Winner.Name}");
+            if (ConsoleIO.GetYesOrNo("Play Again [y/n]: "))
             {
                 Run();
             }
@@ -75,43 +90,35 @@ namespace Gomoku
             {
                 Environment.Exit(0);
             }
-            
         }
 
         public Stone GetNewStone(GomokuEngine Game, char[,] board)
         {
-            if (Game.Current.GetType() == typeof(Gomoku.Players.RandomPlayer))
+            Stone nextStone;
+            while (true)
             {
-                Stone nextStone = Game.Current.GenerateMove(Game.Stones);
-                return nextStone;
-
-            }
-            else
-            {
-                
-                while (true)
+                nextStone = Game.Current.GenerateMove(Game.Stones);
+                //new Stone(ConsoleIO.GetRow(), ConsoleIO.GetColumn(), Game.IsBlacksTurn);
+                if (board[nextStone.Row, nextStone.Column] == 'X' | board[nextStone.Row, nextStone.Column] == 'O' )
                 {
-                    Stone nextStone = new Stone(UI.GetRow(), UI.GetColumn(), Game.IsBlacksTurn);
-                    if (board[nextStone.Row, nextStone.Column] == 'X' | board[nextStone.Row, nextStone.Column] == 'O')
-                    {
-                        UI.Error("\n[Error]: Duplicate move.\n");
-                    }
-                    else
-                    {
-                        return nextStone;
-                    }
+                    ConsoleIO.Error("\n[Error]: Duplicate move.\n");
+                }
+                else
+                {
+                    ConsoleIO.Error($"\n{Game.Current.Name} played a stone on ({nextStone.Row}, {nextStone.Column})\n");
+                    return nextStone;
                 }
             }
         }
         
-        public static IPlayer SetPlayerType(int playerNumber)
+        public IPlayer SetPlayerType(int playerNumber)
         {
             while (true)
             {
                 switch (PlayerMenuSelect(playerNumber))
                 {
                     case 1:
-                        HumanPlayer human = new HumanPlayer(UI.GetName(playerNumber));
+                        HumanPlayer human = new HumanPlayer(ConsoleIO.GetName(playerNumber));
                         return human;
                     case 2:
                         RandomPlayer random = new RandomPlayer();
@@ -121,12 +128,12 @@ namespace Gomoku
                 }
             }
         }
-        private static int PlayerMenuSelect(int playerNumber)
+        private int PlayerMenuSelect(int playerNumber)
         {
-            UI.Display($"Player {playerNumber} is:\n" +
+            ConsoleIO.Display($"Player {playerNumber} is:\n" +
                 "1. Human\n" +
                 "2. Random Player\n");
-            return UI.GetInt("Select [1-2]: ");
+            return ConsoleIO.GetInt("Select [1-2]");
         }
     }
 }

@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 
 namespace Gomoku
 {
-    internal class ConsoleIO
+    public static class ConsoleIO
     {
-        public int GetInt(string prompt)
+        public static int GetInt(string prompt)
         {
             int result = -1;
             bool valid = false;
             while (!valid)
             {
                 Console.Write($"{prompt}: ");
+                Console.ForegroundColor= ConsoleColor.Green;
+                Console.Write("~ ");
                 if (!int.TryParse(Console.ReadLine(), out result))
                 {
                     Error("Please input a proper integer\n\n");
@@ -24,25 +26,30 @@ namespace Gomoku
                     valid = true;
                 }
             }
+            Console.ResetColor();
             return result;
         }
-        public bool GetYesOrNo(string message)
+        public static bool GetYesOrNo(string message)
         {
             while (true)
             {
                 Display(message);
+                Console.ForegroundColor= ConsoleColor.Green;
+                Console.Write("~ ");
                 string sender = Console.ReadLine();
                 if (sender.ToUpper() == "Y")
                 {
+                    Console.ResetColor();
                     return true;
                 }
                 else if (sender.ToUpper() == "N")
                 {
+                    Console.ResetColor();
                     return false;
                 }
             }
         }
-        public int GetValidPlayerType(int highbound)
+        public static int GetValidPlayerType(int highbound)
         {
             bool isGettingInt = true;
             int gotIt = -1;
@@ -59,7 +66,7 @@ namespace Gomoku
             Console.ResetColor();
             return gotIt;
         }
-        public void PrintBoard(char[,] board)
+        public static void PrintBoard(char[,] board)
         {
             for (int i = 0; i < board.GetLength(0)+1; i++)
             {
@@ -104,47 +111,34 @@ namespace Gomoku
             //    }
             //}
         }
-        public string GetName(int playerNum)
+        public static string GetName(int playerNum)
         {
             string result = "";
-            Console.Write($" Player {playerNum}, enter your name: ");
+            
+            Console.Write($"\nPlayer {playerNum}, enter your name: ");
+            Console.ForegroundColor= ConsoleColor.Green;
+            Console.Write("~ ");
             result = Console.ReadLine();
+            
             while (string.IsNullOrEmpty(result))
             {
                 Console.Write("Name required, enter again: ");
                 result = Console.ReadLine();
             }
+            Console.ResetColor();
             return result;
         }
 
-        internal int GetRow()
+        internal static int GetRow()
         {
+            
             int result = -1;
             bool valid = false;
             while (!valid)
             {
                 Console.Write($"Enter a row: ");
-                if (!int.TryParse(Console.ReadLine(), out result))
-                {
-                    Error("Please input a proper integer\n\n");
-                }
-                else if (result > 15 | result < 1)
-                {
-                    Error("Stay within the bounds of the board, 1-15: ");
-                }
-                {
-                    valid = true;
-                }
-            }
-            return result;
-        }
-        internal int GetColumn()
-        {
-            int result = -1;
-            bool valid = false;
-            while (!valid)
-            {
-                Console.Write($"Enter a column: ");
+                Console.ForegroundColor= ConsoleColor.Green;
+                Console.Write("~ ");
                 if (!int.TryParse(Console.ReadLine(), out result))
                 {
                     Error("Please input a proper integer\n\n");
@@ -158,25 +152,46 @@ namespace Gomoku
                     valid = true;
                 }
             }
+            Console.ResetColor();
+            return result;
+        }
+        internal static int GetColumn()
+        {
+            int result = -1;
+            bool valid = false;
+            while (!valid)
+            {
+                Console.Write($"Enter a column: ");
+                Console.ForegroundColor= ConsoleColor.Green;
+                Console.Write("~ ");
+                if (!int.TryParse(Console.ReadLine(), out result))
+                {
+                    Error("Please input a proper integer\n\n");
+                }
+                else if (result > 15 | result < 1)
+                {
+                    Error("Stay within the bounds of the board, 1-15: ");
+                }
+                else
+                {
+                    valid = true;
+                }
+            }
+            Console.ResetColor();
             return result;
         }
 
-        private static string PromptUser(string message)
-        {
-            Console.Write(message);
-            return Console.ReadLine() ?? string.Empty;
-        }
-        public void Display(string message)
+        public static void Display(string message)
         {
             Console.WriteLine(message);
         }
-        public void Error(string message)
+        public static void Error(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Display(message);
             Console.ForegroundColor = ConsoleColor.White;
         }
-        public void Warn(string message)
+        public static void Warn(string message)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Display(message);
